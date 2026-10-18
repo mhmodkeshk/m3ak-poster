@@ -1,24 +1,51 @@
-const FB_PAGE_ID = process.env.FB_PAGE_ID;
-const FB_ACCESS_TOKEN = process.env.FB_ACCESS_TOKEN;
+const pages = [
+  {
+    key: 'M3AK',
+    pageId: process.env.FB_PAGE_ID_M3AK,
+    token: process.env.FB_TOKEN_M3AK,
+    imageName: 'm3ak.jpg',
+    message: 'أسرع دليفيري دواء في كفر الزيات لحد باب بيتك m3ak'
+  },
+  {
+    key: 'DLEL',
+    pageId: process.env.FB_PAGE_ID_DLEL,
+    token: process.env.FB_TOKEN_DLEL,
+    imageName: 'dlel.jpg',
+    message: 'دليل كفر الزيات | كل المحلات والخدمات عندك خطوة واحدة'
+  },
+  {
+    key: 'KESHK',
+    pageId: process.env.FB_PAGE_ID_KESHK,
+    token: process.env.FB_TOKEN_KESHK,
+    imageName: 'keshk.jpg',
+    message: 'صيدلية كشك كفر الزيات | الأدوية متوفرة وسرعة توصيل'
+  }
+];
 
-const message = 'أسرع دليفيري دواء في كفر الزيات لحد باب بيتك m3ak';
-
-async function post() {
-  const imageUrl = 'https://raw.githubusercontent.com/mhmodkeshk/m3ak-poster/main/m3ak.png';
-  const url = `https://graph.facebook.com/v19.0/${FB_PAGE_ID}/photos`;
-
+async function postPage(p) {
+  if (!p.pageId || !p.token) {
+    console.log(`⏭️ Skip ${p.key} (missing env)`);
+    return;
+  }
+  const imageUrl = `https://raw.githubusercontent.com/mhmodkeshk/m3ak-poster/main/${p.imageName}`;
+  const url = `https://graph.facebook.com/v19.0/${p.pageId}/photos`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url: imageUrl, message, access_token: FB_ACCESS_TOKEN }),
+    body: JSON.stringify({ url: imageUrl, message: p.message, access_token: p.token })
   });
-
   const data = await res.json();
   if (data.id) {
-    console.log(`✅ Posted! Post ID: ${data.id}`);
+    console.log(`✅ [${p.key}] Posted! Photo ID: ${data.id}`);
   } else {
-    console.error('❌ Failed:', JSON.stringify(data));
-    process.exit(1);
+    console.error(`❌ [${p.key}] Failed: ${JSON.stringify(data)}`);
+    throw new Error(`Failed posting ${p.key}`);
+  }
+}
+
+async function post() {
+  for (const p of pages) {
+    await postPage(p);
   }
 }
 

@@ -1,4 +1,28 @@
+﻿import fs from 'fs';
+function getRotationMessage(page) {
+  if (!page.useRotation || !page.postsFile) return page.message;
+  try {
+    const p = page.postsFile.startsWith('./') ? new URL(page.postsFile, import.meta.url).pathname.replace(/^\/([A-Z]:\/)/i, '$1') : page.postsFile;
+    const txt = fs.readFileSync(p, 'utf8');
+    const arr = JSON.parse(txt);
+    if (!Array.isArray(arr) || arr.length === 0) return page.message;
+    const idx = new Date().getDate() % arr.length;
+    return arr[idx];
+  } catch (e) {
+    return page.message;
+  }
+}
 const pages = [
+  {
+    key: 'DEUTSCH',
+    pageId: '1001494063045749',
+    token: 'EAAOXkUfVK4YBS1x7vHk66Fp5c5Kw6oUFmFOGbWPkzJkFZCVG0ZCrv8axbu7Ryv7kautoxmXHkZC0bORXwprzBwQL4MPljryq96GVBUWSu9izsD467LfiDpZAC1aabnuCZCUvzqLZA0SxJgcQkqgvDa0wWNJtZAeMFBazbms9BTxckqYWgB6uwyy9A8tGzZBY1g5j3wZDZD',
+    imageName: 'deutsch.jpg',
+    message: null,
+    useRotation: true,
+    postsFile: './posts/deutsch.json'
+  },
+
   {
     key: 'M3AK',
     pageId: process.env.FB_PAGE_ID_M3AK,

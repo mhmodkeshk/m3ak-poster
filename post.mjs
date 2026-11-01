@@ -1,4 +1,4 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 function getRotationMessage(page) {
   if (!page.useRotation || !page.postsFile) return page.message;
   try {
@@ -56,7 +56,7 @@ async function postPage(p) {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url: imageUrl, message: p.message, access_token: p.token })
+    body: JSON.stringify({ url: imageUrl, message: getRotationMessage(p), access_token: p.token })
   });
   const data = await res.json();
   if (data.id) {
